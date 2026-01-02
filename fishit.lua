@@ -247,6 +247,179 @@ Window:SelectTab(1)
         }
     })
 
+local Player = game:GetService("Players").LocalPlayer
+
+local Tab2 = Window:Tab({
+    Title = "Players",
+    Icon = "user"
+})
+
+other = Tab2:Section({ 
+    Title = "Other",
+    Icon = "user",
+    TextXAlignment = "Left",
+    TextSize = 17, -- Default Size
+    Opened = true,
+})
+
+other:Slider({
+    Title = "Speed",
+    Desc = "Default 16",
+    Step = 1,
+    Value = { Min = 18, Max = 100, Default = 18 },
+    Callback = function(Value)
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = Value
+        end
+    end
+})
+
+other:Slider({
+    Title = "Jump",
+    Desc = "Default 50",
+    Step = 1,
+    Value = { Min = 50, Max = 500, Default = 50 },
+    Callback = function(Value)
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.JumpPower = Value
+        end
+    end
+})
+
+Tab2:Divider()
+
+local P = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+_G.InfiniteJump = false
+
+other:Toggle({
+    Title = "Infinite Jump",
+    Desc = "activate to use infinite jump",
+    Icon = false,
+    Type = false,
+    Default = false,
+    Callback = function(state)
+        _G.InfiniteJump = state
+    end
+})
+
+UIS.JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        local h = P.Character and P.Character:FindFirstChildOfClass("Humanoid")
+        if h then
+            h:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+local Player = game:GetService("Players").LocalPlayer
+
+other:Toggle({
+    Title = "Noclip",
+    Desc = "Walk through walls",
+    Icon = false,
+    Type = false,
+    Default = false,
+    Callback = function(state)
+        _G.Noclip = state
+        if state then
+            -- Pastikan cuma satu loop yang berjalan
+            task.spawn(function()
+                while _G.Noclip do
+                    task.wait(0.1)
+                    local character = Player.Character
+                    if character then
+                        for _, part in pairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") and part.CanCollide then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+})
+
+local P, SG = game.Players.LocalPlayer, game.StarterGui
+local frozen, last
+
+local function msg(t,c)
+	pcall(function()
+		SG:SetCore("ChatMakeSystemMessage",{
+			Text="[FREEZE] "..t,
+			Color=c or Color3.fromRGB(150,255,150),
+			Font=Enum.Font.SourceSansBold,
+			FontSize=Enum.FontSize.Size24
+		})
+	end)
+end
+
+local function setFreeze(s)
+	local c = P.Character or P.CharacterAdded:Wait()
+	local h = c:FindFirstChildOfClass("Humanoid")
+	local r = c:FindFirstChild("HumanoidRootPart")
+	if not h or not r then return end
+
+	if s then
+		last = r.CFrame
+		h.WalkSpeed,h.JumpPower,h.AutoRotate,h.PlatformStand = 0,0,false,true
+		for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
+		local a = h:FindFirstChildOfClass("Animator")
+		if a then a:Destroy() end
+		r.Anchored = true
+		msg("Freeze character",Color3.fromRGB(100,200,255))
+	else
+		h.WalkSpeed,h.JumpPower,h.AutoRotate,h.PlatformStand = 16,50,true,false
+		if not h:FindFirstChildOfClass("Animator") then Instance.new("Animator",h) end
+		r.Anchored = false
+		if last then r.CFrame = last end
+		msg("Character released",Color3.fromRGB(255,150,150))
+	end
+end
+
+other:Toggle({
+	Title="Freeze Character",
+	Value=false,
+	Callback=function(s)
+		frozen = s
+		setFreeze(s)
+	end
+})
+
+P.CharacterAdded:Connect(function(c)
+	if frozen then task.wait(.5); setFreeze(true) end
+end)
+
+local P = game.Players.LocalPlayer
+
+local function toggleAnim(s)
+    local c = P.Character or P.CharacterAdded:Wait()
+    local h = c:FindFirstChildOfClass("Humanoid")
+    local a = c:FindFirstChild("Animate")
+    if not h then return end
+
+    if s then
+        if a then a.Disabled = true end
+        for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
+        local an = h:FindFirstChildOfClass("Animator")
+        if an then an:Destroy() end
+    else
+        if a then a.Disabled = false end
+        if not h:FindFirstChildOfClass("Animator") then
+            Instance.new("Animator", h)
+        end
+    end
+end
+
+other:Toggle({
+    Title = "Disable Animations",
+    Value = false,
+    Callback = toggleAnim
+})
+
 _G.AutoFishing = false
 _G.AutoEquipRod = false
 _G.Radar = false
@@ -2010,7 +2183,7 @@ player:Toggle({
 
             game:GetService("StarterGui"):SetCore("SendNotification", {
                 Title = "AntiAFK loaded!",
-                Text = "AntiAFK Actived",
+                Text = "Coded By Lexs",
                 Button1 = "Okey",
                 Duration = 5
             })
@@ -2125,172 +2298,6 @@ task.spawn(function()
         end
     end
 end)
-
-other = Tab2:Section({ 
-    Title = "Other",
-    Icon = "user",
-    TextXAlignment = "Left",
-    TextSize = 17, -- Default Size
-    Opened = true,
-})
-
-other:Slider({
-    Title = "Speed",
-    Desc = "Default 16",
-    Step = 1,
-    Value = { Min = 18, Max = 100, Default = 18 },
-    Callback = function(Value)
-        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = Value
-        end
-    end
-})
-
-other:Slider({
-    Title = "Jump",
-    Desc = "Default 50",
-    Step = 1,
-    Value = { Min = 50, Max = 500, Default = 50 },
-    Callback = function(Value)
-        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.JumpPower = Value
-        end
-    end
-})
-
-Tab2:Divider()
-
-local P = game.Players.LocalPlayer
-local UIS = game:GetService("UserInputService")
-_G.InfiniteJump = false
-
-other:Toggle({
-    Title = "Infinite Jump",
-    Desc = "activate to use infinite jump",
-    Icon = false,
-    Type = false,
-    Default = false,
-    Callback = function(state)
-        _G.InfiniteJump = state
-    end
-})
-
-UIS.JumpRequest:Connect(function()
-    if _G.InfiniteJump then
-        local h = P.Character and P.Character:FindFirstChildOfClass("Humanoid")
-        if h then
-            h:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
-    end
-end)
-
-local Player = game:GetService("Players").LocalPlayer
-
-other:Toggle({
-    Title = "Noclip",
-    Desc = "Walk through walls",
-    Icon = false,
-    Type = false,
-    Default = false,
-    Callback = function(state)
-        _G.Noclip = state
-        if state then
-            -- Pastikan cuma satu loop yang berjalan
-            task.spawn(function()
-                while _G.Noclip do
-                    task.wait(0.1)
-                    local character = Player.Character
-                    if character then
-                        for _, part in pairs(character:GetDescendants()) do
-                            if part:IsA("BasePart") and part.CanCollide then
-                                part.CanCollide = false
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-})
-
-local P, SG = game.Players.LocalPlayer, game.StarterGui
-local frozen, last
-
-local function msg(t,c)
-	pcall(function()
-		SG:SetCore("ChatMakeSystemMessage",{
-			Text="[FREEZE] "..t,
-			Color=c or Color3.fromRGB(150,255,150),
-			Font=Enum.Font.SourceSansBold,
-			FontSize=Enum.FontSize.Size24
-		})
-	end)
-end
-
-local function setFreeze(s)
-	local c = P.Character or P.CharacterAdded:Wait()
-	local h = c:FindFirstChildOfClass("Humanoid")
-	local r = c:FindFirstChild("HumanoidRootPart")
-	if not h or not r then return end
-
-	if s then
-		last = r.CFrame
-		h.WalkSpeed,h.JumpPower,h.AutoRotate,h.PlatformStand = 0,0,false,true
-		for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
-		local a = h:FindFirstChildOfClass("Animator")
-		if a then a:Destroy() end
-		r.Anchored = true
-		msg("Freeze character",Color3.fromRGB(100,200,255))
-	else
-		h.WalkSpeed,h.JumpPower,h.AutoRotate,h.PlatformStand = 16,50,true,false
-		if not h:FindFirstChildOfClass("Animator") then Instance.new("Animator",h) end
-		r.Anchored = false
-		if last then r.CFrame = last end
-		msg("Character released",Color3.fromRGB(255,150,150))
-	end
-end
-
-other:Toggle({
-	Title="Freeze Character",
-	Value=false,
-	Callback=function(s)
-		frozen = s
-		setFreeze(s)
-	end
-})
-
-P.CharacterAdded:Connect(function(c)
-	if frozen then task.wait(.5); setFreeze(true) end
-end)
-
-local P = game.Players.LocalPlayer
-
-local function toggleAnim(s)
-    local c = P.Character or P.CharacterAdded:Wait()
-    local h = c:FindFirstChildOfClass("Humanoid")
-    local a = c:FindFirstChild("Animate")
-    if not h then return end
-
-    if s then
-        if a then a.Disabled = true end
-        for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
-        local an = h:FindFirstChildOfClass("Animator")
-        if an then an:Destroy() end
-    else
-        if a then a.Disabled = false end
-        if not h:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator", h)
-        end
-    end
-end
-
-other:Toggle({
-    Title = "Disable Animations",
-    Value = false,
-    Callback = toggleAnim
-})
 
 graphic = Tab7:Section({ 
     Title = "Graphics In Game",
