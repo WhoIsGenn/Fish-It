@@ -1966,55 +1966,47 @@ local UIS = game:GetService("UserInputService")
 -- PLAYER
 local Player = Players.LocalPlayer
 
--- GUI ROOT
+-- GUI
 local Gui = Instance.new("ScreenGui")
-Gui.Name = "PingCPU"
 Gui.ResetOnSpawn = false
 Gui.DisplayOrder = 999999
 Gui.Parent = Player:WaitForChild("PlayerGui")
 
--- FRAME
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.fromOffset(180, 42)
-Frame.Position = UDim2.fromScale(0.5, 0.03)
-Frame.AnchorPoint = Vector2.new(0.5, 0)
+Frame.Size = UDim2.fromOffset(180,40)
+Frame.Position = UDim2.fromScale(0.5,0.03)
+Frame.AnchorPoint = Vector2.new(0.5,0)
 Frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
 Frame.BorderSizePixel = 0
 Frame.Visible = false
 Frame.Parent = Gui
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,6)
 
-Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 6)
-
--- DRAG SYSTEM (IMPROVED)
-do
-    local dragging, dragStart, startPos
-
-    Frame.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = i.Position
-            startPos = Frame.Position
-        end
-    end)
-
-    UIS.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-
-    UIS.InputChanged:Connect(function(i)
-        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = i.Position - dragStart
-            Frame.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-end
+-- DRAG (SAFE)
+local dragging, dragStart, startPos
+Frame.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = i.Position
+        startPos = Frame.Position
+    end
+end)
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+UIS.InputChanged:Connect(function(i)
+    if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+        local d = i.Position - dragStart
+        Frame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + d.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + d.Y
+        )
+    end
+end)
 
 -- TEXT
 local Text = Instance.new("TextLabel")
@@ -2026,46 +2018,32 @@ Text.TextColor3 = Color3.fromRGB(255,255,255)
 Text.Text = "PING: -- ms | CPU: --%"
 Text.Parent = Frame
 
--- STATS
-local PingStat = Stats.Network.ServerStatsItem["Data Ping"]
+-- SAFE PING FETCH
+local PingStat
+pcall(function()
+    PingStat = Stats.Network.ServerStatsItem["Data Ping"]
+end)
 
 -- STATE
 local ON = false
-local lastCPU = 0
-local lastTick = tick()
+local last = tick()
 
--- CPU CALC (CLIENT LOAD)
-local function getCPU()
-    local now = tick()
-    local dt = now - lastTick
-    lastTick = now
-
-    -- estimasi beban client (RenderStepped delta)
-    lastCPU = math.clamp((dt / (1/60)) * 100, 0, 100)
-    return math.floor(lastCPU)
-end
-
--- UPDATE LOOP
+-- UPDATE
 RunService.RenderStepped:Connect(function()
     if not ON then return end
 
-    local ping = math.floor(PingStat:GetValue())
-    local cpu = getCPU()
+    local ping = PingStat and math.floor(PingStat:GetValue()) or 0
+
+    local now = tick()
+    local cpu = math.clamp(((now - last) / (1/60)) * 100, 0, 100)
+    last = now
 
     Text.Text = ("PING: %d ms | CPU: %d%%"):format(ping, cpu)
-
-    -- COLOR BASED ON LOAD
-    if ping < 80 and cpu < 60 then
-        Text.TextColor3 = Color3.fromRGB(0,255,0)
-    elseif ping < 150 and cpu < 80 then
-        Text.TextColor3 = Color3.fromRGB(255,200,0)
-    else
-        Text.TextColor3 = Color3.fromRGB(255,0,0)
-    end
 end)
 
--- TOGGLE (UI LU)
-player:Toggle({
+-- ⚠️ FIX PALING PENTING ADA DI SINI
+-- PAKAI VARIABLE YANG BENAR
+Player:Toggle({
     Title = "Ping & CPU Display",
     Default = false,
     Callback = function(v)
