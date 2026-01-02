@@ -2127,7 +2127,7 @@ task.spawn(function()
 end)
 
 other = Tab2:Section({ 
-    Title = "Players",
+    Title = "Other",
     Icon = "user",
     TextXAlignment = "Left",
     TextSize = 17, -- Default Size
