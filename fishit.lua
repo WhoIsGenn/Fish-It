@@ -1784,13 +1784,13 @@ Tab6:Toggle({
 })
 
 local Tab7 = Window:Tab({
-    Title = "Settings",
+    Title = "Miscellaneous",
     Icon = "settings",
 })
 
 player = Tab7:Section({ 
-    Title = "Player In Game",
-    Icon = "play",
+    Title = "Players",
+    Icon = "user",
     TextXAlignment = "Left",
     TextSize = 17,
 })
@@ -2010,7 +2010,7 @@ player:Toggle({
 
             game:GetService("StarterGui"):SetCore("SendNotification", {
                 Title = "AntiAFK loaded!",
-                Text = "Coded By Lexs",
+                Text = "AntiAFK Actived!",
                 Button1 = "Okey",
                 Duration = 5
             })
@@ -2128,20 +2128,7 @@ end)
 
 local Player = game:GetService("Players").LocalPlayer
 
-local Tab2 = Window:Tab({
-    Title = "Players",
-    Icon = "user"
-})
-
-other = Tab2:Section({ 
-    Title = "Other",
-    Icon = "user",
-    TextXAlignment = "Left",
-    TextSize = 17, -- Default Size
-    Opened = true,
-})
-
-other:Slider({
+player:Slider({
     Title = "Speed",
     Desc = "Default 16",
     Step = 1,
@@ -2154,7 +2141,7 @@ other:Slider({
     end
 })
 
-other:Slider({
+player:Slider({
     Title = "Jump",
     Desc = "Default 50",
     Step = 1,
@@ -2173,7 +2160,7 @@ local P = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
 _G.InfiniteJump = false
 
-other:Toggle({
+player:Toggle({
     Title = "Infinite Jump",
     Desc = "activate to use infinite jump",
     Icon = false,
@@ -2195,7 +2182,7 @@ end)
 
 local Player = game:GetService("Players").LocalPlayer
 
-other:Toggle({
+player:Toggle({
     Title = "Noclip",
     Desc = "Walk through walls",
     Icon = false,
@@ -2259,7 +2246,7 @@ local function setFreeze(s)
 	end
 end
 
-other:Toggle({
+player:Toggle({
 	Title="Freeze Character",
 	Value=false,
 	Callback=function(s)
@@ -2293,7 +2280,7 @@ local function toggleAnim(s)
     end
 end
 
-other:Toggle({
+player:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = toggleAnim
@@ -2659,7 +2646,7 @@ local function GetConfig()
         InfiniteJump = _G.InfiniteJump or false,
         AutoSell = _G.AutoSell or false,
         InstantCatch = _G.InstantCatch or false,
-        AntiAFK = _G.AntiAFK or false,
+        AntiAFK = _G.AntiAFK or true,
         AutoReconnect = _G.AutoReconnect or false,
     }
 end
