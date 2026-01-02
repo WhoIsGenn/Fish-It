@@ -2176,7 +2176,7 @@ local function applyAnimState()
 end
 
 -- TOGGLE UI
-other:Toggle({
+player:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = function(state)
