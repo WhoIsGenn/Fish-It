@@ -2132,56 +2132,66 @@ player:Toggle({
 local Players = game:GetService("Players")
 local P = Players.LocalPlayer
 
--- STATE GLOBAL
 local animDisabled = false
+local animConn
 
--- CORE FUNCTION
 local function applyAnimState()
     local c = P.Character or P.CharacterAdded:Wait()
     local h = c:WaitForChild("Humanoid", 5)
-    local animate = c:WaitForChild("Animate", 5)
-    if not h then return end
+    local animator = h:FindFirstChildOfClass("Animator") or Instance.new("Animator", h)
 
     if animDisabled then
-        -- DISABLE
-        if animate then
-            animate.Disabled = true
-        end
-
+        -- STOP SEMUA ANIMATION SEKARANG
         for _, track in ipairs(h:GetPlayingAnimationTracks()) do
             track:Stop(0)
+            track:Destroy()
         end
+
+        -- BLOCK SEMUA ANIMATION BARU (TOOL / FISHING / INTERACTION)
+        if animConn then animConn:Disconnect() end
+        animConn = animator.AnimationPlayed:Connect(function(track)
+            task.wait()
+            if animDisabled and track then
+                track:Stop(0)
+                track:Destroy()
+            end
+        end)
     else
-        -- ENABLE (RESET NORMAL)
+        -- ENABLE NORMAL
+        if animConn then
+            animConn:Disconnect()
+            animConn = nil
+        end
+
+        -- Refresh anim system
+        local animate = c:FindFirstChild("Animate")
         if animate then
             animate.Disabled = false
         end
 
-        -- Force animation refresh
         h:ChangeState(Enum.HumanoidStateType.Physics)
         task.wait()
         h:ChangeState(Enum.HumanoidStateType.Running)
     end
 end
 
--- TOGGLE UI CALLBACK
-local function toggleAnim(state)
-    animDisabled = state
-    applyAnimState()
-end
-
--- RESPAWN HANDLER (ANTI BUG)
-P.CharacterAdded:Connect(function()
-    task.wait(0.3) -- tunggu Animate inject
-    applyAnimState()
-end)
-
--- UI
-player:Toggle({
+-- TOGGLE UI
+other:Toggle({
     Title = "Disable Animations",
     Value = false,
-    Callback = toggleAnim
+    Callback = function(state)
+        animDisabled = state
+        applyAnimState()
+    end
 })
+
+-- ANTI RESPAWN BUG
+P.CharacterAdded:Connect(function()
+    task.wait(0.3)
+    if animDisabled then
+        applyAnimState()
+    end
+end)
 
 
 local P = game:GetService("Players").LocalPlayer
