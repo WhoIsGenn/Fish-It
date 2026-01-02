@@ -2269,7 +2269,7 @@ task.spawn(function()
 end)
 
 graphic = Tab7:Section({ 
-    Title = "miscellaneous",
+    Title = "Miscellaneous",
     Icon = "chart-bar",
     TextXAlignment = "Left",
     TextSize = 17,
@@ -2300,7 +2300,7 @@ local function toggleAnim(s)
     end
 end
 
-other:Toggle({
+graphic:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = toggleAnim
