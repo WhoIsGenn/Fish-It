@@ -492,10 +492,7 @@ fishing:Toggle({
     Callback = function(v)
         _G.AutoEquipRod = v
         if v then 
-            rod()
-        else
-            -- Optional: Unequip rod when toggled off
-            net["RF/EquipToolFromHotbar"]:InvokeServer(0)
+            rod() -- Hanya dipanggil sekali saat toggle
         end
     end
 })
