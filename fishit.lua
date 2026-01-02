@@ -740,7 +740,7 @@ end
     end
   
 blantant = Tab3:Section({ 
-    Title = "Blantant Featured | BETA",
+    Title = "Blantant Featured | Recomended",
     Icon = "fish",
     TextTransparency = 0.05,
     TextXAlignment = "Left",
@@ -1077,8 +1077,28 @@ event:Toggle({
 })
 
 local Tab0 = Window:Tab({
-    Title = "Webhook",
+    Title = "Exclusive",
     Icon = "star",
+})
+
+Tab0:Space()
+
+blantant:Button({
+    Title = "X5 V1",
+    Desc = "This Is X5 In Free Script",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://pastefy.app/pIoVjvmR/raw"))()
+    end
+})
+
+blantant:Button({
+    Title = "X7 OLD",
+    Desc = "OLD METHOD X7",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://pastefy.app/lrOQwepH/raw"))()
+    end
 })
 
 webhook = Tab0:Section({ 
@@ -1957,7 +1977,7 @@ Tab6:Toggle({
 })
 
 local Tab7 = Window:Tab({
-    Title = "Miscellaneous",
+    Title = "Settings",
     Icon = "settings",
 })
 
