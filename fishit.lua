@@ -389,37 +389,6 @@ other:Toggle({
 	end
 })
 
-P.CharacterAdded:Connect(function(c)
-	if frozen then task.wait(.5); setFreeze(true) end
-end)
-
-local P = game.Players.LocalPlayer
-
-local function toggleAnim(s)
-    local c = P.Character or P.CharacterAdded:Wait()
-    local h = c:FindFirstChildOfClass("Humanoid")
-    local a = c:FindFirstChild("Animate")
-    if not h then return end
-
-    if s then
-        if a then a.Disabled = true end
-        for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
-        local an = h:FindFirstChildOfClass("Animator")
-        if an then an:Destroy() end
-    else
-        if a then a.Disabled = false end
-        if not h:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator", h)
-        end
-    end
-end
-
-other:Toggle({
-    Title = "Disable Animations",
-    Value = false,
-    Callback = toggleAnim
-})
-
 _G.AutoFishing = false
 _G.AutoEquipRod = false
 _G.Radar = false
@@ -2158,6 +2127,37 @@ player:Toggle({
             S.ui.l.Text = S.ui.dl
         end
     end
+})
+
+P.CharacterAdded:Connect(function(c)
+	if frozen then task.wait(.5); setFreeze(true) end
+end)
+
+local P = game.Players.LocalPlayer
+
+local function toggleAnim(s)
+    local c = P.Character or P.CharacterAdded:Wait()
+    local h = c:FindFirstChildOfClass("Humanoid")
+    local a = c:FindFirstChild("Animate")
+    if not h then return end
+
+    if s then
+        if a then a.Disabled = true end
+        for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
+        local an = h:FindFirstChildOfClass("Animator")
+        if an then an:Destroy() end
+    else
+        if a then a.Disabled = false end
+        if not h:FindFirstChildOfClass("Animator") then
+            Instance.new("Animator", h)
+        end
+    end
+end
+
+player:Toggle({
+    Title = "Disable Animations",
+    Value = false,
+    Callback = toggleAnim
 })
 
 local P = game:GetService("Players").LocalPlayer
