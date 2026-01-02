@@ -2129,36 +2129,60 @@ player:Toggle({
     end
 })
 
-P.CharacterAdded:Connect(function(c)
-	if frozen then task.wait(.5); setFreeze(true) end
-end)
+local Players = game:GetService("Players")
+local P = Players.LocalPlayer
 
-local P = game.Players.LocalPlayer
+-- STATE GLOBAL
+local animDisabled = false
 
-local function toggleAnim(s)
+-- CORE FUNCTION
+local function applyAnimState()
     local c = P.Character or P.CharacterAdded:Wait()
-    local h = c:FindFirstChildOfClass("Humanoid")
-    local a = c:FindFirstChild("Animate")
+    local h = c:WaitForChild("Humanoid", 5)
+    local animate = c:WaitForChild("Animate", 5)
     if not h then return end
 
-    if s then
-        if a then a.Disabled = true end
-        for _,t in ipairs(h:GetPlayingAnimationTracks()) do t:Stop(0) end
-        local an = h:FindFirstChildOfClass("Animator")
-        if an then an:Destroy() end
-    else
-        if a then a.Disabled = false end
-        if not h:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator", h)
+    if animDisabled then
+        -- DISABLE
+        if animate then
+            animate.Disabled = true
         end
+
+        for _, track in ipairs(h:GetPlayingAnimationTracks()) do
+            track:Stop(0)
+        end
+    else
+        -- ENABLE (RESET NORMAL)
+        if animate then
+            animate.Disabled = false
+        end
+
+        -- Force animation refresh
+        h:ChangeState(Enum.HumanoidStateType.Physics)
+        task.wait()
+        h:ChangeState(Enum.HumanoidStateType.Running)
     end
 end
 
+-- TOGGLE UI CALLBACK
+local function toggleAnim(state)
+    animDisabled = state
+    applyAnimState()
+end
+
+-- RESPAWN HANDLER (ANTI BUG)
+P.CharacterAdded:Connect(function()
+    task.wait(0.3) -- tunggu Animate inject
+    applyAnimState()
+end)
+
+-- UI
 player:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = toggleAnim
 })
+
 
 local P = game:GetService("Players").LocalPlayer
 local Z = {P.CameraMaxZoomDistance, P.CameraMinZoomDistance}
