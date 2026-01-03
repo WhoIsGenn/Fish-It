@@ -572,28 +572,35 @@ pcall(function()
     l = g:WaitForChild("RF/CancelFishingInputs")
 end)
 
+--- =========================
+-- BLATANT V1 (IMPROVED)
+-- =========================
+
 local m = nil
 local n = nil
 
 local function p()
     task.spawn(function()
         pcall(function()
+            -- Cancel dengan retry lebih agresif
             local q = l:InvokeServer()
-            if not q then
-                while not q do
-                    q = l:InvokeServer()
-                    task.wait(0.05)
-                end
+            local retryCount = 0
+            while not q and retryCount < 10 do
+                task.wait(0.03)
+                q = l:InvokeServer()
+                retryCount = retryCount + 1
             end
 
+            -- Charge dengan retry lebih agresif
             local t = h:InvokeServer(math.huge)
-            if not t then
-                while not t do
-                    t = h:InvokeServer(math.huge)
-                    task.wait(0.05)
-                end
+            retryCount = 0
+            while not t and retryCount < 10 do
+                task.wait(0.03)
+                t = h:InvokeServer()
+                retryCount = retryCount + 1
             end
 
+            -- Start minigame
             i:InvokeServer(-139.63, 0.996)
         end)
     end)
@@ -637,7 +644,7 @@ local function x(y)
     end
 end
 
-blantant = Tab3:Section({
+blantant = Tab0:Section({
     Title = "Blantant Featured | Recommended",
     Icon = "fish",
 })
@@ -672,40 +679,105 @@ blantant:Input({
     end
 })
 
--- =========================
--- BLATANT V2
+---- =========================
+-- BLATANT V2 (X9 SPAM)
 -- =========================
 
 local v2 = {
     enabled = false,
-    delay = 0.45,
-    complete = 0.18
+    cycleDelay = 1.45,
+    completeDelay = 0.37,
 }
 
 local v2Thread
 
-local function v2Cycle()
+local function performCast()
     task.spawn(function()
-        pcall(l.InvokeServer, l)                 -- cancel
-        pcall(h.InvokeServer, h, math.huge)      -- charge
-        pcall(i.InvokeServer, i, -139.63, 0.996) -- start
-        task.wait(v2.complete)
+        pcall(function()
+            -- Cancel dengan retry
+            local q = l:InvokeServer()
+            local retryCount = 0
+            while not q and retryCount < 10 do
+                task.wait(0.03)
+                q = l:InvokeServer()
+                retryCount = retryCount + 1
+            end
+
+            -- Charge dengan retry
+            local t = h:InvokeServer(math.huge)
+            retryCount = 0
+            while not t and retryCount < 10 do
+                task.wait(0.03)
+                t = h:InvokeServer()
+                retryCount = retryCount + 1
+            end
+
+            -- Start minigame
+            i:InvokeServer(-139.63, 0.996)
+        end)
+    end)
+end
+
+local function completeCast()
+    task.spawn(function()
+        task.wait(v2.completeDelay)
         if v2.enabled then
-            pcall(j.FireServer, j)               -- complete
+            pcall(j.FireServer, j)
         end
     end)
+end
+
+local function v2Loop()
+    while v2.enabled do
+        -- Cast 1 + Complete 1
+        performCast()
+        completeCast()
+        task.wait(0.08)
+        
+        if not v2.enabled then break end
+        
+        -- Cast 2 + Complete 2
+        performCast()
+        completeCast()
+        task.wait(0.08)
+        
+        if not v2.enabled then break end
+        
+        -- Cast 3 + Complete 3
+        performCast()
+        completeCast()
+        task.wait(0.08)
+        
+        if not v2.enabled then break end
+        
+        -- Cast 4 + Complete 4
+        performCast()
+        completeCast()
+        task.wait(0.08)
+        
+        if not v2.enabled then break end
+        
+        -- Extra Complete 5 (buat X9 total)
+        completeCast()
+
+        task.wait(v2.cycleDelay)
+    end
 end
 
 local function startV2()
-    v2Thread = task.spawn(function()
-        while v2.enabled do
-            v2Cycle()
-            task.wait(v2.delay)
-        end
-    end)
+    if v2Thread then return end
+    v2.enabled = true
+
+    -- matiin V1 biar ga tabrakan
+    if c.d then
+        x(false)
+    end
+
+    v2Thread = task.spawn(v2Loop)
 end
 
 local function stopV2()
+    v2.enabled = false
     if v2Thread then
         task.cancel(v2Thread)
         v2Thread = nil
@@ -713,13 +785,8 @@ local function stopV2()
     pcall(l.InvokeServer, l)
 end
 
-local function toggleV2(state)
-    v2.enabled = state
-    if state then
-        -- matiin V1 biar ga tabrakan
-        if c.d then
-            x(false)
-        end
+local function toggleV2(v)
+    if v then
         startV2()
     else
         stopV2()
@@ -727,7 +794,7 @@ local function toggleV2(state)
 end
 
 blantantV2 = Tab3:Section({
-    Title = "Blantant Featured V2 | BETA",
+    Title = "Blantant V2 | X9 Spam",
     Icon = "fish",
 })
 
@@ -741,22 +808,22 @@ blantantV2:Toggle({
 
 blantantV2:Input({
     Title = "Cycle Delay",
-    Default = tostring(v2.delay),
+    Default = tostring(v2.cycleDelay),
     Callback = function(v)
         local n = tonumber(v)
         if n and n > 0 then
-            v2.delay = n
+            v2.cycleDelay = n
         end
     end
 })
 
 blantantV2:Input({
     Title = "Complete Delay",
-    Default = tostring(v2.complete),
+    Default = tostring(v2.completeDelay),
     Callback = function(v)
         local n = tonumber(v)
         if n and n > 0 then
-            v2.complete = n
+            v2.completeDelay = n
         end
     end
 })
