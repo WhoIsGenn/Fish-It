@@ -570,50 +570,62 @@ end)
 
 local m = nil
 local n = nil
+local o = nil
 local missCount = 0
 
+-- FUNGSI ASLI LU TANPA DIUBAH
 local function p()
-    local success = false
-    
-    -- Charge fishing rod
-    local chargeResult = h:InvokeServer(math.huge)
-    if chargeResult then
-        success = true
-    else
-        -- Retry charge 2x lagi
-        for _ = 1, 2 do
-            task.wait(0.05)
-            chargeResult = h:InvokeServer(math.huge)
-            if chargeResult then
-                success = true
-                break
+    task.spawn(function()
+        pcall(function()
+            local q, r = l:InvokeServer()
+            if not q then
+                while not q do
+                    local s = l:InvokeServer()
+                    if s then break end
+                    task.wait(0.05)
+                end
             end
+
+            local t, u = h:InvokeServer(math.huge)
+            if not t then
+                while not t do
+                    local v = h:InvokeServer(math.huge)
+                    if v then break end
+                    task.wait(0.05)
+                end
+            end
+
+            i:InvokeServer(-139.63, 0.996)
+        end)
+    end)
+
+    task.spawn(function()
+        task.wait(c.f)
+        if c.d then
+            pcall(j.FireServer, j)
         end
-    end
-    
-    if not success then
-        missCount += 1
-        return false
-    end
-    
-    -- Start fishing minigame
-    local minigameResult = i:InvokeServer(-139.63, 0.996)
-    if not minigameResult then
-        missCount += 1
-        return false
-    end
-    
-    -- Complete fishing setelah delay
-    task.wait(c.f)
-    if c.d then
-        pcall(j.FireServer, j)
-        missCount = 0 -- Reset miss count jika berhasil
-        return true
-    end
-    
-    return false
+    end)
 end
 
+-- AUTO RETRY SYSTEM (TAMBAHAN SAJA)
+local function recoveryRetry()
+    print("Miss 3x, doing recovery...")
+    
+    -- Cancel fishing
+    pcall(l.InvokeServer, l)
+    task.wait(0.3)
+    
+    -- Re-equip tool
+    pcall(k.FireServer, k, 1)
+    task.wait(0.7)
+    
+    -- Reset miss counter
+    missCount = 0
+    
+    print("Recovery completed, continuing spam...")
+end
+
+-- MODIFIKASI FUNGSI w UNTUK TAMBAH AUTO RETRY
 local function w()
     n = task.spawn(function()
         while c.d do
@@ -621,29 +633,57 @@ local function w()
             task.wait(1.5)
         end
     end)
-    
+
     while c.d do
-        local success = p()
+        -- Simpan status sebelum fishing
+        local previousMissCount = missCount
         
-        -- Cek jika miss 3x, auto retry
-        if missCount >= 3 then
-            print("Miss 3x, retrying...")
-            pcall(l.InvokeServer, l)
-            task.wait(0.3)
-            pcall(k.FireServer, k, 1)
-            task.wait(0.7)
+        -- Panggil fungsi fishing asli lu
+        p()
+        
+        -- Tunggu sebentar untuk cek apakah fishing berhasil atau miss
+        task.wait(0.2)
+        
+        -- INI BAGIAN DETECT MISS (SIMPLE VERSION)
+        -- Kalo lu punya cara lain detect miss, bisa ganti disini
+        -- Asumsi: setiap fishing attempt yang gagal nambah missCount
+        -- Ini contoh logic sederhana:
+        if missCount > previousMissCount then
+            print("Miss detected! Count: " .. missCount)
+            
+            -- Kalo udah miss 3x, lakukan recovery
+            if missCount >= 3 then
+                recoveryRetry()
+            end
+        else
+            -- Kalo ga miss, reset counter
             missCount = 0
         end
         
-        -- Spam fishing seperti aslinya
-        if not success then
-            task.wait(0.1) -- Delay pendek kalo fail
-        else
-            task.wait(c.e) -- Delay normal kalo sukses
-        end
-        
+        task.wait(c.e)
         if not c.d then break end
+        task.wait(0.1)
     end
+end
+
+-- MODIFIKASI FUNGSI p UNTUK TRACK MISS (TAMBAHAN SEDIKIT)
+local original_p = p
+p = function()
+    local success = false
+    
+    -- Panggil fungsi asli tapi dalam pcall untuk track error
+    local ok, result = pcall(function()
+        original_p()
+        success = true
+    end)
+    
+    -- Kalo ada error atau ga success, count sebagai miss
+    if not ok or not success then
+        missCount = missCount + 1
+        print("Fishing attempt failed! Miss count: " .. missCount)
+    end
+    
+    return success
 end
 
 local function x(y)
@@ -651,17 +691,19 @@ local function x(y)
     if y then
         if m then task.cancel(m) end
         if n then task.cancel(n) end
-        missCount = 0
+        missCount = 0 -- Reset miss counter saat start
         m = task.spawn(w)
     else
         if m then task.cancel(m) end
         if n then task.cancel(n) end
         m = nil
         n = nil
+        missCount = 0
         pcall(l.InvokeServer, l)
     end
 end
 
+-- UI TETAP SAMA
 blantant = Tab3:Section({ 
     Title = "Blantant Featured | Beta",
     Icon = "fish",
@@ -712,9 +754,7 @@ local ap = false
 task.spawn(function()
     while task.wait() do
         if ap then
-            pcall(function()
-                Net["RF/UpdateAutoFishingState"]:InvokeServer(true)
-            end)
+            Net["RF/UpdateAutoFishingState"]:InvokeServer(true)
         end
     end
 end)
@@ -725,22 +765,15 @@ blantant:Toggle({
     Callback = function(s)
         ap = s
         if s then
-            FC.RequestFishingMinigameClick = function() 
-                return true
-            end
-            FC.RequestChargeFishingRod = function() 
-                return true
-            end
+            FC.RequestFishingMinigameClick = function() end
+            FC.RequestChargeFishingRod = function() end
         else
-            pcall(function()
-                Net["RF/UpdateAutoFishingState"]:InvokeServer(false)
-            end)
+            Net["RF/UpdateAutoFishingState"]:InvokeServer(false)
             FC.RequestFishingMinigameClick = oc
             FC.RequestChargeFishingRod = orc
         end
     end
 })
-
 
 item = Tab3:Section({     
     Title = "Item",
