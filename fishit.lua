@@ -632,35 +632,175 @@ local function x(y)
     end
 end
 
-netFolder = ReplicatedStorage:WaitForChild('Packages')
-    :WaitForChild('_Index')
-    :WaitForChild('sleitnick_net@0.2.0')
-    :WaitForChild('net')
-Remotes = {}
-Remotes.RF_RequestFishingMinigameStarted = netFolder:WaitForChild("RF/RequestFishingMinigameStarted")
-Remotes.RF_ChargeFishingRod = netFolder:WaitForChild("RF/ChargeFishingRod")
-Remotes.RF_CancelFising = netFolder:WaitForChild('RF/CancelFishingInputs')
-Remotes.RF_CancelFishing = netFolder:WaitForChild("RF/CancelFishingInputs")
-Remotes.chargeRod = netFolder:WaitForChild('RF/ChargeFishingRod')
-Remotes.RE_FishingCompleted = netFolder:WaitForChild("RE/FishingCompleted")
-Remotes.RF_AutoFish = netFolder:WaitForChild("RF/UpdateAutoFishingState")
+blantant = Tab3:Section({ 
+    Title = "Blantant Featured | Recomended",
+    Icon = "fish",
+    TextTransparency = 0.05,
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
+
+blantant:Toggle({
+    Title = "Blantant",
+    Value = c.d,
+    Callback = function(z2)
+        x(z2)
+    end
+})
+
+blantant:Input({
+    Title = "Cancel Delay",
+    Placeholder = "1.7",
+    Default = tostring(c.e),
+    Callback = function(z4)
+        local z5 = tonumber(z4)
+        if z5 and z5 > 0 then
+            c.e = z5
+        end
+    end
+})
+
+blantant:Input({
+    Title = "Complete Delay",
+    Placeholder = "1.4",
+    Default = tostring(c.f),
+    Callback = function(z7)
+        local z8 = tonumber(z7)
+        if z8 and z8 > 0 then
+            c.f = z8
+        end
+    end
+})
+
+local RS = game:GetService("ReplicatedStorage")
+local Net = RS.Packages._Index["sleitnick_net@0.2.0"].net
+local FC = require(RS.Controllers.FishingController)
+
+local oc, orc = FC.RequestFishingMinigameClick, FC.RequestChargeFishingRod
+local ap = false
+
+task.spawn(function()
+    while task.wait() do
+        if ap then
+            Net["RF/UpdateAutoFishingState"]:InvokeServer(true)
+        end
+    end
+end)
+
+blantant:Toggle({
+    Title = "Auto Perfection",
+    Value = false,
+    Callback = function(s)
+        ap = s
+        if s then
+            FC.RequestFishingMinigameClick = function() end
+            FC.RequestChargeFishingRod = function() end
+        else
+            Net["RF/UpdateAutoFishingState"]:InvokeServer(false)
+            FC.RequestFishingMinigameClick = oc
+            FC.RequestChargeFishingRod = orc
+        end
+    end
+})
+
+local c={d=false,e=1.6,f=0.37}
+
+local g=ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
+
+local h,i,j,k,l
+pcall(function()
+    h=g:WaitForChild("RF/ChargeFishingRod")
+    i=g:WaitForChild("RF/RequestFishingMinigameStarted")
+    j=g:WaitForChild("RE/FishingCompleted")
+    k=g:WaitForChild("RE/EquipToolFromHotbar")
+    l=g:WaitForChild("RF/CancelFishingInputs")
+end)
+
+local m=nil
+local n=nil
+local o=nil
+
+local function p()
+    task.spawn(function()
+        pcall(function()
+            local q,r=l:InvokeServer()
+            if not q then
+                while not q do
+                    local s=l:InvokeServer()
+                    if s then break end
+                    task.wait(0.05)
+                end
+            end
+
+            local t,u=h:InvokeServer(math.huge)
+            if not t then
+                while not t do
+                    local v=h:InvokeServer(math.huge)
+                    if v then break end
+                    task.wait(0.05)
+                end
+            end
+
+            i:InvokeServer(-139.63,0.996)
+        end)
+    end)
+
+    task.spawn(function()
+        task.wait(c.f)
+        if c.d then
+            pcall(j.FireServer,j)
+        end
+    end)
+end
+
+local function w()
+    n=task.spawn(function()
+        while c.d do
+            pcall(k.FireServer,k,1)
+            task.wait(1.5)
+        end
+    end)
+
+    while c.d do
+        p()
+        task.wait(c.e)
+        if not c.d then break end
+        task.wait(0.1)
+    end
+end
+
+local function x(y)
+    c.d=y
+    if y then
+        if m then task.cancel(m) end
+        if n then task.cancel(n) end
+        m=task.spawn(w)
+    else
+        if m then task.cancel(m) end
+        if n then task.cancel(n) end
+        m=nil
+        n=nil
+        pcall(l.InvokeServer,l)
+    end
+end
 
 toggleState = {
     autoFishing = false,
     blatantRunning = false,
 }
 
-FishingController = require(
-    ReplicatedStorage:WaitForChild('Controllers')
-        :WaitForChild('FishingController')
 )
 
-local oldCharge = FishingController.RequestChargeFishingRod
-FishingController.RequestChargeFishingRod = function(...)
-    if toggleState.blatantRunning or toggleState.autoFishing then
-        return
+if not _G.__FISHING_HOOKED then
+    _G.__FISHING_HOOKED = true
+
+    local oldCharge = FishingController.RequestChargeFishingRod
+    FishingController.RequestChargeFishingRod = function(...)
+        if toggleState.blatantRunning or toggleState.autoFishing or c.d then
+            return
+        end
+        return oldCharge(...)
     end
-	return oldCharge(...)
 end
 
 local isAutoRunning = false
@@ -2184,7 +2324,7 @@ P.CharacterAdded:Connect(function()
 end)
 
 -- ✅ UI (DIJAMIN KELOAD)
-other:Toggle({
+player:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = function(state)
