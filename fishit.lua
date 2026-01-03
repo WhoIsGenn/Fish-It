@@ -77,10 +77,10 @@ end)
 -- ============================
 
 local Window = WindUI:CreateWindow({
-    Title = "Lexs Hub",
+    Title = "Victoria Hub",
     Icon = "rbxassetid://71947103252559",
     Author = "Premium | Fish It",
-    Folder = "LEXS_HUB",
+    Folder = "VICTORIA_HUB",
     Size = UDim2.fromOffset(260, 290),
     Transparent = true,
     Theme = "Dark",
@@ -89,7 +89,7 @@ local Window = WindUI:CreateWindow({
 })                                                             
 
 Window:EditOpenButton({
-    Title = "Lexs Hub",
+    Title = "VICTORIA Hub",
     Icon = "rbxassetid://71947103252559",
     CornerRadius = UDim.new(0,16),
     StrokeThickness = 2,
@@ -177,7 +177,7 @@ local Dialog = Window:Dialog({
             Title = "Copy Discord",
             Callback = function()
                 if setclipboard then
-                    setclipboard("https://discord.gg/lexshub")
+                    setclipboard("https://discord.gg/fjafFyYKj")
                     
                     -- Notify jika berhasil
                     WindUI:Notify({
@@ -212,7 +212,7 @@ local Dialog = Window:Dialog({
 })
 
 WindUI:Notify({
-    Title = "Lexs Hub Loaded",
+    Title = "Victoria Hub Loaded",
     Content = "UI loaded successfully!",
     Duration = 3,
     Icon = "bell",
@@ -226,7 +226,7 @@ local Tab1 = Window:Tab({
 Window:SelectTab(1)
 
     Tab1:Paragraph({
-        Title = "Lexs Hub Community",
+        Title = "Victoria Hub Community",
         Desc = "Join Our Community Discord Server to get the latest updates, support, and connect with other users!",
         Image = "rbxassetid://71947103252559",
         ImageSize = 24,
@@ -235,10 +235,10 @@ Window:SelectTab(1)
                 Title = "Copy Link",
                 Icon = "link",
                 Callback = function()
-                    setclipboard("https://discord.gg/lexshub")
+                    setclipboard("https://discord.gg/fjafFyYKj")
                     WindUI:Notify({
                         Title = "Link Disalin!",
-                        Content = "Link Discord Lexs Hub berhasil disalin.",
+                        Content = "Link Discord Victoria Hub berhasil disalin.",
                         Duration = 3,
                         Icon = "copy",
                     })
@@ -632,6 +632,160 @@ local function x(y)
     end
 end
 
+blantant = Tab3:Section({ 
+    Title = "Blantant Featured",
+    Icon = "fish",
+    TextTransparency = 0.05,
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
+
+blantant:Toggle({
+    Title = "Blantant",
+    Value = c.d,
+    Callback = function(z2)
+        x(z2)
+    end
+})
+
+blantant:Input({
+    Title = "Cancel Delay",
+    Placeholder = "1.7",
+    Default = tostring(c.e),
+    Callback = function(z4)
+        local z5 = tonumber(z4)
+        if z5 and z5 > 0 then
+            c.e = z5
+        end
+    end
+})
+
+blantant:Input({
+    Title = "Complete Delay",
+    Placeholder = "1.4",
+    Default = tostring(c.f),
+    Callback = function(z7)
+        local z8 = tonumber(z7)
+        if z8 and z8 > 0 then
+            c.f = z8
+        end
+    end
+})
+
+local RS = game:GetService("ReplicatedStorage")
+local Net = RS.Packages._Index["sleitnick_net@0.2.0"].net
+local FC = require(RS.Controllers.FishingController)
+
+local oc, orc = FC.RequestFishingMinigameClick, FC.RequestChargeFishingRod
+local ap = false
+
+task.spawn(function()
+    while task.wait() do
+        if ap then
+            Net["RF/UpdateAutoFishingState"]:InvokeServer(true)
+        end
+    end
+end)
+
+blantant:Toggle({
+    Title = "Auto Perfection",
+    Value = false,
+    Callback = function(s)
+        ap = s
+        if s then
+            FC.RequestFishingMinigameClick = function() end
+            FC.RequestChargeFishingRod = function() end
+        else
+            Net["RF/UpdateAutoFishingState"]:InvokeServer(false)
+            FC.RequestFishingMinigameClick = oc
+            FC.RequestChargeFishingRod = orc
+        end
+    end
+})
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local c={d=false,e=1.6,f=0.37}
+
+local g=ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
+
+local h,i,j,k,l
+pcall(function()
+    h=g:WaitForChild("RF/ChargeFishingRod")
+    i=g:WaitForChild("RF/RequestFishingMinigameStarted")
+    j=g:WaitForChild("RE/FishingCompleted")
+    k=g:WaitForChild("RE/EquipToolFromHotbar")
+    l=g:WaitForChild("RF/CancelFishingInputs")
+end)
+
+local m=nil
+local n=nil
+local o=nil
+
+local function p()
+    task.spawn(function()
+        pcall(function()
+            local q,r=l:InvokeServer()
+            if not q then
+                while not q do
+                    local s=l:InvokeServer()
+                    if s then break end
+                    task.wait(0.05)
+                end
+            end
+
+            local t,u=h:InvokeServer(math.huge)
+            if not t then
+                while not t do
+                    local v=h:InvokeServer(math.huge)
+                    if v then break end
+                    task.wait(0.05)
+                end
+            end
+
+            i:InvokeServer(-139.63,0.996)
+        end)
+    end)
+
+    task.spawn(function()
+        task.wait(c.f)
+        if c.d then
+            pcall(j.FireServer,j)
+        end
+    end)
+end
+
+local function w()
+    n=task.spawn(function()
+        while c.d do
+            pcall(k.FireServer,k,1)
+            task.wait(1.5)
+        end
+    end)
+
+    while c.d do
+        p()
+        task.wait(c.e)
+        if not c.d then break end
+        task.wait(0.1)
+    end
+end
+
+local function x(y)
+    c.d=y
+    if y then
+        if m then task.cancel(m) end
+        if n then task.cancel(n) end
+        m=task.spawn(w)
+    else
+        if m then task.cancel(m) end
+        if n then task.cancel(n) end
+        m=nil
+        n=nil
+        pcall(l.InvokeServer,l)
+    end
+end
+
 netFolder = ReplicatedStorage:WaitForChild('Packages')
     :WaitForChild('_Index')
     :WaitForChild('sleitnick_net@0.2.0')
@@ -708,7 +862,7 @@ end
         print('Super Instant Fishing stopped')
     end
   
-blantant = Tab3:Section({ 
+blantant2 = Tab3:Section({ 
     Title = "Blatant Featured | Beta",
     Icon = "fish",
     TextTransparency = 0.05,
@@ -716,7 +870,7 @@ blantant = Tab3:Section({
     TextSize = 17,
 })
 
-blantant:Toggle({
+blantant2:Toggle({
     Title = "Blatant Mode",
     Value = toggleState.blatantRunning,
     Callback = function(value)
@@ -731,7 +885,7 @@ blantant:Toggle({
     end
 })
 
-blantant:Input({
+blantant2:Input({
     Title = "Reel Delay",
     Placeholder = "Delay (seconds)",
     Default = tostring(_G.ReelSuper),
@@ -744,7 +898,7 @@ blantant:Input({
     end
 })
 
-blantant:Input({
+blantant2:Input({
     Title = "Custom Complete Delay",
     Placeholder = "Delay (seconds)",
     Default = tostring(toggleState.completeDelays),
@@ -1149,7 +1303,7 @@ function sendTestWebhook()
     end
 
     local payload = {
-        username = "Lexs Hub Webhook",
+        username = "Victoria Hub Webhook",
         avatar_url = "https://cdn.discordapp.com/attachments/1403943739176783954/1451856403621871729/ChatGPT_Image_27_Sep_2025_16.38.53.png",
         embeds = {{
             title = "Test Webhook Connected",
@@ -1190,12 +1344,12 @@ function sendNewFishWebhook(newlyCaughtFish)
     local payload = {
         content = nil,
         embeds = {{
-            title = "Lexs Hub Webhook Fish caught!",
+            title = "Victoria Hub Webhook Fish caught!",
             description = string.format(
                 "Congrats! **%s** You obtained new **%s** here for full detail fish :",
                 playerName, newFishRarity
             ),
-            url = "https://discord.gg/lexshub",
+            url = "https://discord.gg/fjafFyYKj",
             color = 65535,
 
             -- === PERUBAHAN SATU-SATUNYA DI SINI (FIELDS) ===
@@ -1217,7 +1371,7 @@ function sendNewFishWebhook(newlyCaughtFish)
             -- === AKHIR PERUBAHAN ===
 
             footer = {
-                text = "Lexs Hub Webhook",
+                text = "Victoria Hub Webhook",
                 icon_url = "https://cdn.discordapp.com/attachments/1403943739176783954/1451856403621871729/ChatGPT_Image_27_Sep_2025_16.38.53.png"
             },
             timestamp = os.date("!%Y-%m-%dT%H:%M:%S.000Z"),
@@ -1225,7 +1379,7 @@ function sendNewFishWebhook(newlyCaughtFish)
                 url = getThumbnailURL(newFishDetails.Icon)
             }
         }},
-        username = "Lexs Hub Webhook",
+        username = "Victoria Hub Webhook",
         avatar_url = "https://cdn.discordapp.com/attachments/1403943739176783954/1451856403621871729/ChatGPT_Image_27_Sep_2025_16.38.53.png",
         attachments = {}
     }
@@ -1929,7 +2083,7 @@ Tab6:Toggle({
 })
 
 local Tab7 = Window:Tab({
-    Title = "Miscellaneous",
+    Title = "Settings",
     Icon = "settings",
 })
 
@@ -2075,7 +2229,7 @@ player:Toggle({
 })
 
 local P = game:GetService("Players").LocalPlayer
-local HN, HL = "discord.gg/lexshub", "Lv. ???"
+local HN, HL = "discord.gg/victoriahub", "Lv. ???"
 local S = {on = false, ui = nil}
 
 local function setup(c)
@@ -2184,7 +2338,7 @@ P.CharacterAdded:Connect(function()
 end)
 
 -- ✅ UI (DIJAMIN KELOAD)
-player:Toggle({
+other:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = function(state)
@@ -2236,7 +2390,7 @@ player:Toggle({
 
             game:GetService("StarterGui"):SetCore("SendNotification", {
                 Title = "AntiAFK loaded!",
-                Text = "Coded By Lexs",
+                Text = "Coded By Victoria",
                 Button1 = "Okey",
                 Duration = 5
             })
@@ -2324,7 +2478,7 @@ end
 P.PlayerAdded:Connect(function(plr)
     if ON and plr~=LP and BL[plr.UserId] then
         WindUI:Notify({
-            Title="Lexs Hub",
+            Title="Victoria Hub",
             Content=plr.Name.." telah join, serverhop dalam 6 detik...",
             Duration=6,
             Icon="alert-triangle"
@@ -2339,7 +2493,7 @@ task.spawn(function()
             for _,plr in ipairs(P:GetPlayers()) do
                 if plr~=LP and BL[plr.UserId] then
                     WindUI:Notify({
-                        Title="Lexs Hub",
+                        Title="Victoria Hub",
                         Content=plr.Name.." terdeteksi, serverhop dalam 6 detik...",
                         Duration=6,
                         Icon="alert-triangle"
@@ -2699,8 +2853,8 @@ config = Tab7:Section({
     TextSize = 17,
 })
 
-local ConfigFolder = "LEXS_HUB/Configs"
-if not isfolder("LEXS_HUB") then makefolder("LEXS_HUB") end
+local ConfigFolder = "VICTORIA_HUB/Configs"
+if not isfolder("VICTORIA_HUB") then makefolder("VICTORIA_HUB") end
 if not isfolder(ConfigFolder) then makefolder(ConfigFolder) end
 
 local ConfigName = "default.json"
