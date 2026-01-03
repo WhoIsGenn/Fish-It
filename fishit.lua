@@ -739,15 +739,15 @@ end
         print('Super Instant Fishing stopped')
     end
   
-blantant = Tab0:Section({ 
-    Title = "Blantant X8 | Recomended",
+fishing = Tab0:Section({ 
+    Title = "fishing X8 | Recomended",
     Icon = "fish",
     TextTransparency = 0.05,
     TextXAlignment = "Left",
     TextSize = 17,
 })
 
-blantant:Toggle({
+fishing:Toggle({
     Title = "Blatant Mode",
     Value = toggleState.blatantRunning,
     Callback = function(value)
@@ -762,7 +762,7 @@ blantant:Toggle({
     end
 })
 
-blantant:Input({
+fishing:Input({
     Title = "Reel Delay",
     Placeholder = "Delay (seconds)",
     Default = tostring(_G.ReelSuper),
@@ -775,7 +775,7 @@ blantant:Input({
     end
 })
 
-blantant:Input({
+fishing:Input({
     Title = "Custom Complete Delay",
     Placeholder = "Delay (seconds)",
     Default = tostring(toggleState.completeDelays),
