@@ -703,7 +703,7 @@ blantant:Toggle({
     end
 })
 
-Tab0:Space()
+Tab3:Space()
 
 blantant:Button({
     Title = "Blantant Featured x8 BETA",
