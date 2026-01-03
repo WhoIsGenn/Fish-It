@@ -637,7 +637,7 @@ local function x(y)
     end
 end
 
-blantant = Tab0:Section({
+blantant = Tab3:Section({
     Title = "Blantant Featured | Recommended",
     Icon = "fish",
 })
@@ -672,10 +672,7 @@ blantant:Input({
     end
 })
 
-
-
---- =========================
---- =========================
+---- =========================
 -- BLATANT V2 (X9 SAFE)
 -- =========================
 
@@ -822,55 +819,6 @@ blantantV2:Input({
 })
 
 -- =========================
--- AUTO PERFECTION (SAFE VERSION)
--- =========================
-
-local autoPerfectionSuccess = false
-local RS = game:GetService("ReplicatedStorage")
-local Net, FC, oc, orc, ap
-
-pcall(function()
-    Net = RS.Packages._Index["sleitnick_net@0.2.0"].net
-    FC = require(RS.Controllers.FishingController)
-    oc = FC.RequestFishingMinigameClick
-    orc = FC.RequestChargeFishingRod
-    ap = false
-    autoPerfectionSuccess = true
-end)
-
-if autoPerfectionSuccess then
-    task.spawn(function()
-        while task.wait() do
-            if ap then
-                pcall(function()
-                    Net["RF/UpdateAutoFishingState"]:InvokeServer(true)
-                end)
-            end
-        end
-    end)
-
-    blantantV2:Toggle({
-        Title = "Auto Perfection",
-        Value = false,
-        Callback = function(s)
-            ap = s
-            if s then
-                FC.RequestFishingMinigameClick = function() end
-                FC.RequestChargeFishingRod = function() end
-            else
-                pcall(function()
-                    Net["RF/UpdateAutoFishingState"]:InvokeServer(false)
-                end)
-                FC.RequestFishingMinigameClick = oc
-                FC.RequestChargeFishingRod = orc
-            end
-        end
-    })
-else
-    print("[WARNING] Auto Perfection failed to load - FishingController not accessible")
-end
-
--- =========================
 -- DELAY OBTAIN NOTIFICATION
 -- =========================
 
@@ -878,39 +826,42 @@ local notifDelay = 5
 local notifEnabled = false
 local lastNotifTime = 0
 
-pcall(function()
-    local RemoteEvent = ReplicatedStorage
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_net@0.2.0")
-        :WaitForChild("net")
-        :WaitForChild("RE/ObtainedNewFishNotification")
+task.spawn(function()
+    task.wait(2)
+    pcall(function()
+        local RemoteEvent = ReplicatedStorage
+            :WaitForChild("Packages")
+            :WaitForChild("_Index")
+            :WaitForChild("sleitnick_net@0.2.0")
+            :WaitForChild("net")
+            :WaitForChild("RE/ObtainedNewFishNotification")
 
-    RemoteEvent.OnClientEvent:Connect(function(fishId, fishData, extraData, isSpecial)
-        if notifEnabled then
-            lastNotifTime = tick()
-            local currentTime = lastNotifTime
-            
-            task.spawn(function()
-                task.wait(notifDelay)
+        RemoteEvent.OnClientEvent:Connect(function(fishId, fishData, extraData, isSpecial)
+            if notifEnabled then
+                lastNotifTime = tick()
+                local currentTime = lastNotifTime
                 
-                if currentTime == lastNotifTime then
-                    pcall(function()
-                        local player = game.Players.LocalPlayer
-                        for _, gui in pairs(player.PlayerGui:GetChildren()) do
-                            for _, obj in pairs(gui:GetDescendants()) do
-                                if (obj:IsA("Frame") or obj:IsA("ImageLabel")) and obj.Visible then
-                                    local name = obj.Name:lower()
-                                    if name:find("notif") or name:find("obtain") or name:find("fish") or name:find("caught") then
-                                        obj.Visible = false
+                task.spawn(function()
+                    task.wait(notifDelay)
+                    
+                    if currentTime == lastNotifTime then
+                        pcall(function()
+                            local player = game.Players.LocalPlayer
+                            for _, gui in pairs(player.PlayerGui:GetChildren()) do
+                                for _, obj in pairs(gui:GetDescendants()) do
+                                    if (obj:IsA("Frame") or obj:IsA("ImageLabel")) and obj.Visible then
+                                        local name = obj.Name:lower()
+                                        if name:find("notif") or name:find("obtain") or name:find("fish") or name:find("caught") then
+                                            obj.Visible = false
+                                        end
                                     end
                                 end
                             end
-                        end
-                    end)
-                end
-            end)
-        end
+                        end)
+                    end
+                end)
+            end
+        end)
     end)
 end)
 
