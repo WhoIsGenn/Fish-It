@@ -549,74 +549,62 @@ fishing:Slider({
     end
 })
 
--- =========================
--- BLATANT X7 V1 (ORIGINAL)
--- =========================
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local c = { d = false, e = 1.6, f = 0.37 }
+local c={d=false,e=1.6,f=0.37}
 
-local g = ReplicatedStorage
-    :WaitForChild("Packages")
-    :WaitForChild("_Index")
-    :WaitForChild("sleitnick_net@0.2.0")
-    :WaitForChild("net")
+local g=ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
 
-local h, i, j, k, l
+local h,i,j,k,l
 pcall(function()
-    h = g:WaitForChild("RF/ChargeFishingRod")
-    i = g:WaitForChild("RF/RequestFishingMinigameStarted")
-    j = g:WaitForChild("RE/FishingCompleted")
-    k = g:WaitForChild("RE/EquipToolFromHotbar")
-    l = g:WaitForChild("RF/CancelFishingInputs")
+    h=g:WaitForChild("RF/ChargeFishingRod")
+    i=g:WaitForChild("RF/RequestFishingMinigameStarted")
+    j=g:WaitForChild("RE/FishingCompleted")
+    k=g:WaitForChild("RE/EquipToolFromHotbar")
+    l=g:WaitForChild("RF/CancelFishingInputs")
 end)
 
---- =========================
--- BLATANT V1 (IMPROVED)
--- =========================
-
-local m = nil
-local n = nil
+local m=nil
+local n=nil
+local o=nil
 
 local function p()
     task.spawn(function()
         pcall(function()
-            -- Cancel dengan retry lebih agresif
-            local q = l:InvokeServer()
-            local retryCount = 0
-            while not q and retryCount < 10 do
-                task.wait(0.03)
-                q = l:InvokeServer()
-                retryCount = retryCount + 1
+            local q,r=l:InvokeServer()
+            if not q then
+                while not q do
+                    local s=l:InvokeServer()
+                    if s then break end
+                    task.wait(0.05)
+                end
             end
 
-            -- Charge dengan retry lebih agresif
-            local t = h:InvokeServer(math.huge)
-            retryCount = 0
-            while not t and retryCount < 10 do
-                task.wait(0.03)
-                t = h:InvokeServer()
-                retryCount = retryCount + 1
+            local t,u=h:InvokeServer(math.huge)
+            if not t then
+                while not t do
+                    local v=h:InvokeServer(math.huge)
+                    if v then break end
+                    task.wait(0.05)
+                end
             end
 
-            -- Start minigame
-            i:InvokeServer(-139.63, 0.996)
+            i:InvokeServer(-139.63,0.996)
         end)
     end)
 
     task.spawn(function()
         task.wait(c.f)
         if c.d then
-            pcall(j.FireServer, j)
+            pcall(j.FireServer,j)
         end
     end)
 end
 
 local function w()
-    n = task.spawn(function()
+    n=task.spawn(function()
         while c.d do
-            pcall(k.FireServer, k, 1)
+            pcall(k.FireServer,k,1)
             task.wait(1.5)
         end
     end)
@@ -630,270 +618,143 @@ local function w()
 end
 
 local function x(y)
-    c.d = y
+    c.d=y
     if y then
         if m then task.cancel(m) end
         if n then task.cancel(n) end
-        m = task.spawn(w)
+        m=task.spawn(w)
     else
         if m then task.cancel(m) end
         if n then task.cancel(n) end
-        m = nil
-        n = nil
-        pcall(l.InvokeServer, l)
+        m=nil
+        n=nil
+        pcall(l.InvokeServer,l)
     end
 end
 
-blantant = Tab0:Section({
-    Title = "Blantant Featured | Recommended",
-    Icon = "fish",
-})
+netFolder = ReplicatedStorage:WaitForChild('Packages')
+    :WaitForChild('_Index')
+    :WaitForChild('sleitnick_net@0.2.0')
+    :WaitForChild('net')
+Remotes = {}
+Remotes.RF_RequestFishingMinigameStarted = netFolder:WaitForChild("RF/RequestFishingMinigameStarted")
+Remotes.RF_ChargeFishingRod = netFolder:WaitForChild("RF/ChargeFishingRod")
+Remotes.RF_CancelFising = netFolder:WaitForChild('RF/CancelFishingInputs')
+Remotes.RF_CancelFishing = netFolder:WaitForChild("RF/CancelFishingInputs")
+Remotes.chargeRod = netFolder:WaitForChild('RF/ChargeFishingRod')
+Remotes.RE_FishingCompleted = netFolder:WaitForChild("RE/FishingCompleted")
+Remotes.RF_AutoFish = netFolder:WaitForChild("RF/UpdateAutoFishingState")
 
-blantant:Toggle({
-    Title = "Blantant V1",
-    Value = c.d,
-    Callback = function(v)
-        x(v)
-    end
-})
-
-blantant:Input({
-    Title = "Cancel Delay",
-    Default = tostring(c.e),
-    Callback = function(v)
-        local n = tonumber(v)
-        if n and n > 0 then
-            c.e = n
-        end
-    end
-})
-
-blantant:Input({
-    Title = "Complete Delay",
-    Default = tostring(c.f),
-    Callback = function(v)
-        local n = tonumber(v)
-        if n and n > 0 then
-            c.f = n
-        end
-    end
-})
-
--- =========================
--- DELAY OBTAIN NOTIFICATION
--- =========================
-
-local notifDelay = 5
-local notifEnabled = false
-local lastNotifTime = 0
-
-task.spawn(function()
-    task.wait(2)
-    pcall(function()
-        local RemoteEvent = ReplicatedStorage
-            :WaitForChild("Packages")
-            :WaitForChild("_Index")
-            :WaitForChild("sleitnick_net@0.2.0")
-            :WaitForChild("net")
-            :WaitForChild("RE/ObtainedNewFishNotification")
-
-        RemoteEvent.OnClientEvent:Connect(function(fishId, fishData, extraData, isSpecial)
-            if notifEnabled then
-                lastNotifTime = tick()
-                local currentTime = lastNotifTime
-                
-                task.spawn(function()
-                    task.wait(notifDelay)
-                    
-                    if currentTime == lastNotifTime then
-                        pcall(function()
-                            local player = game.Players.LocalPlayer
-                            for _, gui in pairs(player.PlayerGui:GetChildren()) do
-                                for _, obj in pairs(gui:GetDescendants()) do
-                                    if (obj:IsA("Frame") or obj:IsA("ImageLabel")) and obj.Visible then
-                                        local name = obj.Name:lower()
-                                        if name:find("notif") or name:find("obtain") or name:find("fish") or name:find("caught") then
-                                            obj.Visible = false
-                                        end
-                                    end
-                                end
-                            end
-                        end)
-                    end
-                end)
-            end
-        end)
-    end)
-end)
-
-blantant:Toggle({
-    Title = "Delay Notification",
-    Value = false,
-    Callback = function(v)
-        notifEnabled = v
-    end
-})
-
-blantant:Input({
-    Title = "Notification Duration (s)",
-    Default = tostring(notifDelay),
-    Callback = function(v)
-        local n = tonumber(v)
-        if n and n > 0 then
-            notifDelay = n
-        end
-    end
-})
-
----- =========================
--- BLATANT V2 (X9 SPAM)
--- =========================
-
-local v2 = {
-    enabled = false,
-    cycleDelay = 1.45,
-    completeDelay = 0.37,
+toggleState = {
+    autoFishing = false,
+    blatantRunning = false,
 }
 
-local v2Thread
+FishingController = require(
+    ReplicatedStorage:WaitForChild('Controllers')
+        :WaitForChild('FishingController')
+)
 
-local function performCast()
-    task.spawn(function()
-        pcall(function()
-            -- Cancel dengan retry
-            local q = l:InvokeServer()
-            local retryCount = 0
-            while not q and retryCount < 10 do
-                task.wait(0.03)
-                q = l:InvokeServer()
-                retryCount = retryCount + 1
-            end
+local oldCharge = FishingController.RequestChargeFishingRod
+FishingController.RequestChargeFishingRod = function(...)
+    if toggleState.blatantRunning or toggleState.autoFishing then
+        return
+    end
+	return oldCharge(...)
+end
 
-            -- Charge dengan retry
-            local t = h:InvokeServer(math.huge)
-            retryCount = 0
-            while not t and retryCount < 10 do
-                task.wait(0.03)
-                t = h:InvokeServer()
-                retryCount = retryCount + 1
-            end
+local isAutoRunning = false
 
-            -- Start minigame
-            i:InvokeServer(-139.63, 0.996)
+local isSuperInstantRunning = false
+_G.ReelSuper = 1.15
+     toggleState.completeDelays = 0.30
+     toggleState.delayStart = 0.2
+    local function autoEquipSuper()
+        local success, err = pcall(function()
+            Remotes.RE_EquipTool:FireServer(1)
         end)
-    end)
-end
+        if success then
+        end
+    end
 
-local function completeCast()
+    local function superInstantFishingCycle()
+        task.spawn(function()
+            Remotes.RF_CancelFishing:InvokeServer()
+            Remotes.RF_ChargeFishingRod:InvokeServer(tick())
+            Remotes.RF_RequestFishingMinigameStarted:InvokeServer(-139.63796997070312, 0.9964792798079721)
+            task.wait(toggleState.completeDelays)
+            Remotes.RE_FishingCompleted:FireServer()
+        end)
+    end
+
+    local function doSuperFishingFlow()
+        superInstantFishingCycle()
+    end
+
+local function startSuperInstantFishing()
+    if isSuperInstantRunning then return end
+    isSuperInstantRunning = true
+
     task.spawn(function()
-        task.wait(v2.completeDelay)
-        if v2.enabled then
-            pcall(j.FireServer, j)
+        while isSuperInstantRunning do
+            superInstantFishingCycle()
+            task.wait(math.max(_G.ReelSuper, 0.1))
         end
     end)
 end
 
-local function v2Loop()
-    while v2.enabled do
-        -- Cast 1 + Complete 1
-        performCast()
-        completeCast()
-        task.wait(0.08)
-        
-        if not v2.enabled then break end
-        
-        -- Cast 2 + Complete 2
-        performCast()
-        completeCast()
-        task.wait(0.08)
-        
-        if not v2.enabled then break end
-        
-        -- Cast 3 + Complete 3
-        performCast()
-        completeCast()
-        task.wait(0.08)
-        
-        if not v2.enabled then break end
-        
-        -- Cast 4 + Complete 4
-        performCast()
-        completeCast()
-        task.wait(0.08)
-        
-        if not v2.enabled then break end
-        
-        -- Extra Complete 5 (buat X9 total)
-        completeCast()
-
-        task.wait(v2.cycleDelay)
+    local function stopSuperInstantFishing()
+        isSuperInstantRunning = false
+        print('Super Instant Fishing stopped')
     end
-end
-
-local function startV2()
-    if v2Thread then return end
-    v2.enabled = true
-
-    -- matiin V1 biar ga tabrakan
-    if c.d then
-        x(false)
-    end
-
-    v2Thread = task.spawn(v2Loop)
-end
-
-local function stopV2()
-    v2.enabled = false
-    if v2Thread then
-        task.cancel(v2Thread)
-        v2Thread = nil
-    end
-    pcall(l.InvokeServer, l)
-end
-
-local function toggleV2(v)
-    if v then
-        startV2()
-    else
-        stopV2()
-    end
-end
-
-blantantV2 = Tab3:Section({
-    Title = "Blantant V2 | X9 Spam",
+  
+blantant = Tab3:Section({ 
+    Title = "Blantant Featured | Beta",
     Icon = "fish",
+    TextTransparency = 0.05,
+    TextXAlignment = "Left",
+    TextSize = 17,
 })
 
-blantantV2:Toggle({
-    Title = "Blantant V2",
-    Value = v2.enabled,
-    Callback = function(v)
-        toggleV2(v)
-    end
-})
+blantant:Toggle({
+    Title = "Blatant Mode",
+    Value = toggleState.blatantRunning,
+    Callback = function(value)
+        toggleState.blatantRunning = value
+        Remotes.RF_AutoFish:InvokeServer(value)
 
-blantantV2:Input({
-    Title = "Cycle Delay",
-    Default = tostring(v2.cycleDelay),
-    Callback = function(v)
-        local n = tonumber(v)
-        if n and n > 0 then
-            v2.cycleDelay = n
+        if value then
+            startSuperInstantFishing()
+        else
+            stopSuperInstantFishing()
         end
     end
 })
 
-blantantV2:Input({
-    Title = "Complete Delay",
-    Default = tostring(v2.completeDelay),
-    Callback = function(v)
-        local n = tonumber(v)
-        if n and n > 0 then
-            v2.completeDelay = n
+blantant:Input({
+    Title = "Reel Delay",
+    Placeholder = "Delay (seconds)",
+    Default = tostring(_G.ReelSuper),
+    Callback = function(input)
+        local num = tonumber(input)
+        if num and num >= 0 then
+            _G.ReelSuper = num
+            print("ReelSuper updated to:", num)
         end
     end
 })
 
+blantant:Input({
+    Title = "Custom Complete Delay",
+    Placeholder = "Delay (seconds)",
+    Default = tostring(toggleState.completeDelays),
+    Callback = function(input)
+        local num = tonumber(input)
+        if num and num > 0 then
+            toggleState.completeDelays = num
+        end
+    end
+})
 
 item = Tab3:Section({     
     Title = "Item",
