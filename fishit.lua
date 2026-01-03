@@ -568,9 +568,39 @@ local m=nil
 local n=nil
 local o=nil
 
+-- Variabel untuk tracking equip
+local lastEquipTime = 0
+local equipCooldown = 2
+
+-- Function untuk mendapatkan random charge quality
+local function getRandomCharge()
+    local random = math.random(1, 100)
+    
+    if random <= 30 then -- 30% chance Perfect
+        return 100, -139.63, 0.996
+    elseif random <= 80 then -- 50% chance Amazing (30+50=80)
+        return math.random(90, 99), -125, 0.95
+    else -- 20% chance Good (80+20=100)
+        return math.random(80, 89), -110, 0.85
+    end
+end
+
+-- Function untuk equip rod sekali saja
+local function ensureRodEquipped()
+    local currentTime = tick()
+    if currentTime - lastEquipTime > equipCooldown then
+        pcall(k.FireServer, k, 1)
+        lastEquipTime = currentTime
+    end
+end
+
 local function p()
     task.spawn(function()
         pcall(function()
+            -- Equip rod di awal
+            ensureRodEquipped()
+            task.wait(0.3)
+            
             local q,r=l:InvokeServer()
             if not q then
                 while not q do
@@ -580,16 +610,19 @@ local function p()
                 end
             end
 
-            local t,u=h:InvokeServer(math.huge)
+            -- Dapatkan random charge quality
+            local chargeQuality, targetX, targetY = getRandomCharge()
+            
+            local t,u=h:InvokeServer(chargeQuality) -- Pakai random charge
             if not t then
                 while not t do
-                    local v=h:InvokeServer(math.huge)
+                    local v=h:InvokeServer(chargeQuality)
                     if v then break end
                     task.wait(0.05)
                 end
             end
 
-            i:InvokeServer(-139.63,0.996)
+            i:InvokeServer(targetX, targetY) -- Pakai target yang sesuai
         end)
     end)
 
@@ -602,18 +635,15 @@ local function p()
 end
 
 local function w()
-    n=task.spawn(function()
-        while c.d do
-            pcall(k.FireServer,k,1)
-            task.wait(1.3)
-        end
-    end)
+    -- Equip rod hanya sekali di awal
+    ensureRodEquipped()
+    task.wait(0.5)
 
     while c.d do
         p()
         task.wait(c.e)
         if not c.d then break end
-        task.wait(0.05)
+        task.wait(0.1)
     end
 end
 
@@ -632,6 +662,7 @@ local function x(y)
     end
 end
 
+-- GUI Elements - SAMA PERSIS seperti script awal
 blantant = Tab3:Section({ 
     Title = "Blantant Featured | Beta",
     Icon = "fish",
@@ -672,6 +703,7 @@ blantant:Input({
     end
 })
 
+-- Auto Perfection - SAMA PERSIS
 local RS = game:GetService("ReplicatedStorage")
 local Net = RS.Packages._Index["sleitnick_net@0.2.0"].net
 local FC = require(RS.Controllers.FishingController)
@@ -703,10 +735,10 @@ blantant:Toggle({
     end
 })
 
-Tab3:Space()
+Tab0:Space()
 
 blantant:Button({
-    Title = "Blantant Featured x9",
+    Title = "Blantant Featured x8 BETA",
     Desc = "Still development",
     Locked = false,
     Callback = function()
