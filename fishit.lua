@@ -551,7 +551,7 @@ fishing:Slider({
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local c={d=false,e=1.7,f=0.37}
+local c={d=false,e=1.7,f=0.3}
 
 local g=ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
 
@@ -605,7 +605,7 @@ local function w()
     n=task.spawn(function()
         while c.d do
             pcall(k.FireServer,k,1)
-            task.wait(1.4)
+            task.wait(1.3)
         end
     end)
 
@@ -613,7 +613,7 @@ local function w()
         p()
         task.wait(c.e)
         if not c.d then break end
-        task.wait(0.1)
+        task.wait(0.05)
     end
 end
 
@@ -706,7 +706,7 @@ blantant:Toggle({
 Tab3:Space()
 
 blantant:Button({
-    Title = "Blantant Featured x8 BETA",
+    Title = "Blantant Featured x9",
     Desc = "Still development",
     Locked = false,
     Callback = function()
