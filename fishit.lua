@@ -551,7 +551,7 @@ fishing:Slider({
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local c={d=false,e=1.7,f=0.3}
+local c={d=false,e=1.7,f=0.35}
 
 local g=ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
 
@@ -571,19 +571,6 @@ local o=nil
 -- Variabel untuk tracking equip
 local lastEquipTime = 0
 local equipCooldown = 2
-
--- Function untuk mendapatkan random charge quality
-local function getRandomCharge()
-    local random = math.random(1, 100)
-    
-    if random <= 30 then -- 30% chance Perfect
-        return 100, -139.63, 0.996
-    elseif random <= 80 then -- 50% chance Amazing (30+50=80)
-        return math.random(90, 99), -125, 0.95
-    else -- 20% chance Good (80+20=100)
-        return math.random(80, 89), -110, 0.85
-    end
-end
 
 -- Function untuk equip rod sekali saja
 local function ensureRodEquipped()
@@ -610,19 +597,16 @@ local function p()
                 end
             end
 
-            -- Dapatkan random charge quality
-            local chargeQuality, targetX, targetY = getRandomCharge()
-            
-            local t,u=h:InvokeServer(chargeQuality) -- Pakai random charge
+            local t,u=h:InvokeServer(math.huge)
             if not t then
                 while not t do
-                    local v=h:InvokeServer(chargeQuality)
+                    local v=h:InvokeServer(math.huge)
                     if v then break end
                     task.wait(0.05)
                 end
             end
 
-            i:InvokeServer(targetX, targetY) -- Pakai target yang sesuai
+            i:InvokeServer(-139.63,0.996)
         end)
     end)
 
@@ -635,6 +619,14 @@ local function p()
 end
 
 local function w()
+    -- HAPUS timer equip berulang di sini
+    -- n=task.spawn(function()
+    --     while c.d do
+    --         pcall(k.FireServer,k,1) -- JANGAN equip berulang-ulang
+    --         task.wait(1.3)
+    --     end
+    -- end)
+
     -- Equip rod hanya sekali di awal
     ensureRodEquipped()
     task.wait(0.5)
@@ -662,7 +654,7 @@ local function x(y)
     end
 end
 
--- GUI Elements - SAMA PERSIS seperti script awal
+-- GUI Elements - SAMA PERSIS seperti script awal Anda
 blantant = Tab3:Section({ 
     Title = "Blantant Featured | Beta",
     Icon = "fish",
@@ -703,7 +695,7 @@ blantant:Input({
     end
 })
 
--- Auto Perfection - SAMA PERSIS
+-- Auto Perfection - SAMA PERSIS seperti script awal Anda
 local RS = game:GetService("ReplicatedStorage")
 local Net = RS.Packages._Index["sleitnick_net@0.2.0"].net
 local FC = require(RS.Controllers.FishingController)
@@ -735,7 +727,7 @@ blantant:Toggle({
     end
 })
 
-Tab0:Space()
+Tab3:Space()
 
 blantant:Button({
     Title = "Blantant Featured x8 BETA",
