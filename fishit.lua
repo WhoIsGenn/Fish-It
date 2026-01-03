@@ -1,7 +1,7 @@
 -- [[ WEBHOOK LOGGER - START ]] -- --(Info Executed)--
 local WebhookConfig = {
     Url = "https://discord.com/api/webhooks/1455552801705955430/LF6MI_XBA3073CUDZOv-OtJe74KvUVt-fnXKqqGe3LiGc3g6C0NW76qAoONOwcQQGm2D", 
-    ScriptName = "Lexshub | Fish It", 
+    ScriptName = "VictoriaHub | Fish It", 
     EmbedColor = 65535 
 }
 
