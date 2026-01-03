@@ -1929,7 +1929,7 @@ Tab6:Toggle({
 })
 
 local Tab7 = Window:Tab({
-    Title = "Settings",
+    Title = "Miscellaneous",
     Icon = "settings",
 })
 
@@ -2184,7 +2184,7 @@ P.CharacterAdded:Connect(function()
 end)
 
 -- ✅ UI (DIJAMIN KELOAD)
-other:Toggle({
+player:Toggle({
     Title = "Disable Animations",
     Value = false,
     Callback = function(state)
