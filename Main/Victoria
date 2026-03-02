@@ -1,7 +1,7 @@
 local games = {
-    [121864768012064] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/fishit.lua",
+    [121864768012064] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/Fishit.lua",
     [130342654546662] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/SK.lua",
-    ]
+}
 
 local currentID = game.PlaceId
 local scriptURL = games[currentID]
@@ -9,5 +9,5 @@ local scriptURL = games[currentID]
 if scriptURL then
     loadstring(game:HttpGet(scriptURL))()
 else
-    game.Players.LocalPlayer:Kick("This game ain't on the list.\nCheck the Discord for whitelisted games.")
+    game.Players.LocalPlayer:Kick("Yo! This game ain't on the list.\nCheck the Discord for whitelisted games, homie.")
 end
