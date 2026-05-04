@@ -4,6 +4,7 @@ local games = {
     [93978595733734] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/vd.lua",
     [13772394625] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/Bladeball.lua",
     [77747658251236] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/sailorpiece.lua",
+    [107095834793267] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/oilempire.lua",
 }
 
 local currentID = game.PlaceId
