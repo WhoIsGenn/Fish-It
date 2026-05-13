@@ -17,12 +17,26 @@ local games = {
     [107095834793267] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/oilempire.lua",
 }
 
+local StarterGui = game:GetService("StarterGui")
+
+local function notify(title, text, duration)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = duration or 3,
+        })
+    end)
+end
+
 local scriptUrl = games[PlaceId]
 if scriptUrl then    
     _G.CurrentPlaceId = PlaceId
     loadstring(game:HttpGet(scriptUrl))()
-    print("[Victoria Hub] Loaded for Place ID: " .. PlaceId)
+    notify("Victoria Hub", "Loaded for Place ID: " .. PlaceId, 2)
 else
+    notify("Victoria Hub", "Game not supported! Place ID: " .. PlaceId, 5)
+    task.wait(1)
     game.Players.LocalPlayer:Kick(
         "Game not supported!\n" ..
         "Place ID: " .. PlaceId .. "\n" ..
