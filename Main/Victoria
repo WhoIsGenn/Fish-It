@@ -2,21 +2,20 @@ local PlaceId = game.PlaceId
 
 local games = {
     -- ========== SAILOR PIECE ==========
-    [77747658251236] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sailorpiece.lua",   
-    [130167267952199] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sailorpiece.lua",  
-    [98826438856089] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sailorpiece.lua",   
-    [75982168454032] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sailorpiece.lua", 
-    [96767841099256] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sailorpiece.lua",   
-    [138368689293913] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sailorpiece.lua",  
+    [77747658251236] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sailorpiece.lua",   
+    [130167267952199] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sailorpiece.lua",  
+    [98826438856089] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sailorpiece.lua",   
+    [75982168454032] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sailorpiece.lua", 
+    [96767841099256] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sailorpiece.lua",   
+    [138368689293913] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sailorpiece.lua",  
     
     -- ==================== --
-    [121864768012064] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/fishit.lua",
-    [130342654546662] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/sk.lua",
-    [93978595733734] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/vd.lua",
-    [13772394625] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/bladeball.lua",
-    [107095834793267] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Scripts/oilempire.lua",
+    [121864768012064] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/fishit.lua",
+    [130342654546662] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/sk.lua",
+    [93978595733734] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/vd.lua",
+    [13772394625] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/bladeball.lua",
+    [107095834793267] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Scripts/oilempire.lua",
 }
-
 
 local scriptUrl = games[PlaceId]
 if scriptUrl then    
