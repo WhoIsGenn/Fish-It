@@ -15,7 +15,9 @@ local games = {
     [93978595733734] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/vd.lua",
     [13772394625] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/Bladeball.lua",
     [107095834793267] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/oilempire.lua",
+    [92416421522960] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/slimerng.lua",
 }
+
 
 local StarterGui = game:GetService("StarterGui")
 
