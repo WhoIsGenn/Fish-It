@@ -1,57 +1,23 @@
 local PlaceId = game.PlaceId
 
 local games = {
-    [77747658251236] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",
-        name = "Sailor Piece"
-    },
-    [130167267952199] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",
-        name = "Sailor Piece"
-    },
-    [98826438856089] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",
-        name = "Sailor Piece"
-    },
-    [75982168454032] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",
-        name = "Sailor Piece"
-    },
-    [96767841099256] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",
-        name = "Sailor Piece"
-    },
-    [138368689293913] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",
-        name = "Sailor Piece"
-    },
-    [121864768012064] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/fishit.lua",
-        name = "Fish It"
-    },
-    [130342654546662] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/SK.lua",
-        name = "SK"
-    },
-    [93978595733734] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/vd.lua",
-        name = "VD"
-    },
-    [13772394625] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/Bladeball.lua",
-        name = "Blade Ball"
-    },
-    [107095834793267] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/oilempire.lua",
-        name = "Oil Empire"
-    },
-    [92416421522960] = {
-        url = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/slimerng.lua",
-        name = "Slime RNG"
-    },
+    -- =================== --
+    [77747658251236] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",   
+    [130167267952199] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",  
+    [98826438856089] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",   
+    [75982168454032] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua", 
+    [96767841099256] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",   
+    [138368689293913] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/sailorpiece.lua",  
+    
+    -- ==================== --
+    [121864768012064] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/fishit.lua",
+    [130342654546662] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/SK.lua",
+    [93978595733734] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/vd.lua",
+    [13772394625] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/Bladeball.lua",
+    [107095834793267] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/oilempire.lua",
+    [92416421522960] = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/main/Loader/slimerng.lua",
 }
 
-local UNIVERSAL_SCRIPT = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/universal.lua"
 
 local StarterGui = game:GetService("StarterGui")
 
@@ -65,45 +31,17 @@ local function notify(title, text, duration)
     end)
 end
 
-local gameData = games[PlaceId]
-
-if gameData then
-    local gameName = gameData.name
-    local scriptUrl = gameData.url
-    
-    notify("Victoria Hub", "Loading " .. gameName .. "...", 2)
-    
+local scriptUrl = games[PlaceId]
+if scriptUrl then    
     _G.CurrentPlaceId = PlaceId
-    _G.ScriptType = "Specific"
-    _G.GameName = gameName
-    
-    local success, err = pcall(function()
-        loadstring(game:HttpGet(scriptUrl))()
-    end)
-    
-    if success then
-        notify("Victoria Hub", gameName .. " loaded successfully!", 3)
-    else
-        notify("Victoria Hub", "Error loading " .. gameName, 4)
-        warn("Error loading script: " .. tostring(err))
-    end
+    loadstring(game:HttpGet(scriptUrl))()
+    notify("Victoria Hub", "Loaded for Place ID: " .. PlaceId, 2)
 else
-    notify("Victoria Hub", "Game not supported! Loading Universal Mode...", 3)
-    
-    _G.CurrentPlaceId = PlaceId
-    _G.ScriptType = "Universal"
-    _G.GameName = "Universal Mode"
-    
-    local success, err = pcall(function()
-        loadstring(game:HttpGet(UNIVERSAL_SCRIPT))()
-    end)
-    
-    if success then
-        notify("Victoria Hub", "Universal Mode loaded!", 2)
-        task.wait(1)
-        notify("Victoria Hub", "Some features may not work", 3)
-    else
-        notify("Victoria Hub", "Error loading Universal Mode", 4)
-        warn("Error loading universal script: " .. tostring(err))
-    end
+    notify("Victoria Hub", "Game not supported! Place ID: " .. PlaceId, 5)
+    task.wait(1)
+    game.Players.LocalPlayer:Kick(
+        "Game not supported!\n" ..
+        "Place ID: " .. PlaceId .. "\n" ..
+        "Join Discord for support."
+    )
 end
