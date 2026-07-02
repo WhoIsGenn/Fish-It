@@ -54,8 +54,6 @@ local games = {
 local UNIVERSAL_SCRIPT = "https://raw.githubusercontent.com/WhoIsGenn/VictoriaHub/refs/heads/main/Loader/universal.lua"
 
 local StarterGui = game:GetService("StarterGui")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 
 local function notify(title, text, duration)
     pcall(function()
@@ -67,95 +65,17 @@ local function notify(title, text, duration)
     end)
 end
 
-local function showLoading(gameName)
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "VictoriaLoader"
-    screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-    screenGui.IgnoreGuiInset = true
-    screenGui.ResetOnSpawn = false
-    
-    local frame = Instance.new("Frame", screenGui)
-    frame.Size = UDim2.new(1, 0, 1, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
-    frame.BackgroundTransparency = 0.4
-    frame.ZIndex = 999
-    
-    local loadingFrame = Instance.new("Frame", frame)
-    loadingFrame.Size = UDim2.new(0, 300, 0, 150)
-    loadingFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
-    loadingFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    loadingFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 50)
-    loadingFrame.BackgroundTransparency = 0.2
-    loadingFrame.BorderSizePixel = 0
-    loadingFrame.ZIndex = 1000
-    
-    local corner = Instance.new("UICorner", loadingFrame)
-    corner.CornerRadius = UDim.new(0, 12)
-    
-    local titleLabel = Instance.new("TextLabel", loadingFrame)
-    titleLabel.Size = UDim2.new(1, 0, 0, 40)
-    titleLabel.Position = UDim2.new(0, 0, 0, 20)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 22
-    titleLabel.TextColor3 = Color3.fromRGB(30, 144, 255)
-    titleLabel.Text = "Victoria Hub"
-    titleLabel.ZIndex = 1001
-    
-    local gameLabel = Instance.new("TextLabel", loadingFrame)
-    gameLabel.Size = UDim2.new(1, 0, 0, 30)
-    gameLabel.Position = UDim2.new(0, 0, 0, 65)
-    gameLabel.BackgroundTransparency = 1
-    gameLabel.Font = Enum.Font.Gotham
-    gameLabel.TextSize = 16
-    gameLabel.TextColor3 = Color3.fromRGB(200, 200, 255)
-    gameLabel.Text = "Loading " .. gameName .. "..."
-    gameLabel.ZIndex = 1001
-    
-    local loadingBarBg = Instance.new("Frame", loadingFrame)
-    loadingBarBg.Size = UDim2.new(0, 200, 0, 4)
-    loadingBarBg.Position = UDim2.new(0.5, -100, 0, 110)
-    loadingBarBg.AnchorPoint = Vector2.new(0.5, 0.5)
-    loadingBarBg.BackgroundColor3 = Color3.fromRGB(50, 50, 80)
-    loadingBarBg.BorderSizePixel = 0
-    loadingBarBg.ZIndex = 1001
-    
-    local cornerBar = Instance.new("UICorner", loadingBarBg)
-    cornerBar.CornerRadius = UDim.new(1, 0)
-    
-    local loadingBar = Instance.new("Frame", loadingBarBg)
-    loadingBar.Size = UDim2.new(0, 0, 1, 0)
-    loadingBar.BackgroundColor3 = Color3.fromRGB(30, 144, 255)
-    loadingBar.BorderSizePixel = 0
-    loadingBar.ZIndex = 1002
-    
-    local cornerFill = Instance.new("UICorner", loadingBar)
-    cornerFill.CornerRadius = UDim.new(1, 0)
-    
-    local tweenService = game:GetService("TweenService")
-    local tween = tweenService:Create(loadingBar, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
-        Size = UDim2.new(1, 0, 1, 0)
-    })
-    tween:Play()
-    
-    return screenGui, tween
-end
-
 local gameData = games[PlaceId]
 
 if gameData then
     local gameName = gameData.name
     local scriptUrl = gameData.url
     
-    local loadingGui, loadTween = showLoading(gameName)
-    
     notify("Victoria Hub", "Loading " .. gameName .. "...", 2)
     
     _G.CurrentPlaceId = PlaceId
     _G.ScriptType = "Specific"
     _G.GameName = gameName
-    
-    task.wait(1.5)
     
     local success, err = pcall(function()
         loadstring(game:HttpGet(scriptUrl))()
@@ -167,20 +87,12 @@ if gameData then
         notify("Victoria Hub", "Error loading " .. gameName, 4)
         warn("Error loading script: " .. tostring(err))
     end
-    
-    if loadingGui then
-        loadingGui:Destroy()
-    end
 else
     notify("Victoria Hub", "Game not supported! Loading Universal Mode...", 3)
-    
-    local loadingGui, loadTween = showLoading("Universal Mode")
     
     _G.CurrentPlaceId = PlaceId
     _G.ScriptType = "Universal"
     _G.GameName = "Universal Mode"
-    
-    task.wait(1.5)
     
     local success, err = pcall(function()
         loadstring(game:HttpGet(UNIVERSAL_SCRIPT))()
@@ -193,9 +105,5 @@ else
     else
         notify("Victoria Hub", "Error loading Universal Mode", 4)
         warn("Error loading universal script: " .. tostring(err))
-    end
-    
-    if loadingGui then
-        loadingGui:Destroy()
     end
 end
